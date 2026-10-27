@@ -1,7 +1,146 @@
 #include "filesystem"
 #include "iostream"
 #include "stdexcept"
+#include "fstream"
+#include "sstream"
+#include "vector"
 #include "Utilities.h"
+
+struct GroundTruthBall
+{
+    std::string label;
+    cv::Point2f centre;
+};
+
+std::vector<GroundTruthBall> LoadGroundTruth(
+    const std::string &csv_path,
+    const std::string &image_name)
+{
+    std::ifstream file(csv_path);
+
+    if (!file.is_open())
+    {
+        throw std::runtime_error(
+            "Could not open ground-truth file: " + csv_path);
+    }
+
+    std::vector<GroundTruthBall> balls;
+    std::string line;
+
+    // Skip the CSV header.
+    std::getline(file, line);
+
+    while (std::getline(file, line))
+    {
+        if (line.empty())
+        {
+            continue;
+        }
+
+        std::stringstream stream(line);
+
+        std::string image;
+        std::string label;
+        std::string row_text;
+        std::string column_text;
+
+        std::getline(stream, image, ',');
+        std::getline(stream, label, ',');
+        std::getline(stream, row_text, ',');
+        std::getline(stream, column_text, ',');
+
+        if (image != image_name)
+        {
+            continue;
+        }
+
+        // A blank coordinate pair is not a ball at (0, 0).
+        if (row_text.empty() && column_text.empty())
+        {
+            continue;
+        }
+
+        if (row_text.empty() || column_text.empty())
+        {
+            throw std::runtime_error(
+                "Incomplete ground-truth coordinate for " +
+                image + ", ball " + label);
+        }
+
+        const float row = std::stof(row_text);
+        const float column = std::stof(column_text);
+
+        GroundTruthBall ball;
+        ball.label = label;
+        ball.centre = cv::Point2f(column, row);
+
+        balls.push_back(ball);
+    }
+    return balls;
+}
+
+cv::Mat DrawGroundTruth(
+    const cv::Mat& rectified_image,
+    const std::vector<GroundTruthBall>& balls,
+    const std::string& image_name)
+{
+    cv::Mat display = rectified_image.clone();
+
+    int drawn_count = 0;
+    int invalid_count = 0;
+
+    for (const GroundTruthBall& ball : balls)
+    {
+        const float x = ball.centre.x;
+        const float y = ball.centre.y;
+
+        if (x < 0 || x >= rectified_image.cols ||
+            y < 0 || y >= rectified_image.rows)
+        {
+            std::cerr
+                << "Ground-truth warning: " << image_name
+                << ", ball " << ball.label
+                << ", row=" << y
+                << ", column=" << x
+                << " is outside the rectified image.\n";
+
+            ++invalid_count;
+            continue;
+        }
+
+        const cv::Point centre(cvRound(x), cvRound(y));
+
+        cv::drawMarker(
+            display,
+            centre,
+            cv::Scalar(0, 0, 255),
+            cv::MARKER_CROSS,
+            12,
+            2
+        );
+
+        cv::putText(
+            display,
+            ball.label,
+            centre + cv::Point(8, -8),
+            cv::FONT_HERSHEY_SIMPLEX,
+            0.5,
+            cv::Scalar(0, 0, 255),
+            1
+        );
+
+        ++drawn_count;
+    }
+
+    std::cout
+        << image_name
+        << ": " << balls.size() << " nonblank annotations, "
+        << drawn_count << " drawn, "
+        << invalid_count << " outside image bounds.\n";
+
+    return display;
+}
+
 
 void MyApplication()
 {
@@ -78,13 +217,26 @@ void MyApplication()
             const std::string image_name = std::filesystem::path(pool_files[file_no]).stem().string();
             const std::string output_path = "output/debug/" + image_name + "_rectified.png";
 
+            const std::vector<GroundTruthBall> ground_truth = LoadGroundTruth("data/ground_truth/ground_truth.csv", pool_files[file_no]);
+            const std::string ground_truth_output = "output/debug/" + image_name + "_ground_truth.png";
+
+            const Mat ground_truth_display = DrawGroundTruth(rectified_image, ground_truth, pool_files[file_no]);
+
             if (!imwrite(output_path, rectified_image))
             {
                 throw std::runtime_error("Failed to write the rectified image to: " + output_path);
             }
 
+           if (!imwrite(ground_truth_output, ground_truth_display))
+            {
+                throw std::runtime_error( "Could not save image: " + ground_truth_output);
+            }
+
             namedWindow("Rectified Table", WINDOW_NORMAL);
             imshow("Rectified Table", rectified_image);
+
+            namedWindow("Ground truth", WINDOW_NORMAL);
+            imshow("Ground truth", ground_truth_display);
 
             cout << "Saved " << output_path << std::endl;
             cout << "Dimensions of Rectified Image: "
