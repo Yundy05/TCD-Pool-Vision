@@ -8,11 +8,21 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_package(OpenCV 4 REQUIRED COMPONENTS core imgproc imgcodecs highgui)
+find_package(OpenCV 4.12.0 EXACT REQUIRED CONFIG COMPONENTS
+    core
+    imgproc
+    imgcodecs
+    highgui
+)
 
 add_executable(PoolBallVision
     dev_main.cpp
     myApplication.cpp
+    Utilities.cpp
+    Geometric.cpp
+    Histograms.cpp
+    Region.cpp
+    Utilities.h
 )
 
 target_include_directories(PoolBallVision PRIVATE

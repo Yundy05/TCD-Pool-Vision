@@ -129,6 +129,102 @@ PoolBallVision/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/PoolBallVision.dir/build.make CMakeFiles/PoolBallVision.dir/build
 .PHONY : PoolBallVision/fast
 
+Geometric.o: Geometric.cpp.o
+.PHONY : Geometric.o
+
+# target to build an object file
+Geometric.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PoolBallVision.dir/build.make CMakeFiles/PoolBallVision.dir/Geometric.cpp.o
+.PHONY : Geometric.cpp.o
+
+Geometric.i: Geometric.cpp.i
+.PHONY : Geometric.i
+
+# target to preprocess a source file
+Geometric.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PoolBallVision.dir/build.make CMakeFiles/PoolBallVision.dir/Geometric.cpp.i
+.PHONY : Geometric.cpp.i
+
+Geometric.s: Geometric.cpp.s
+.PHONY : Geometric.s
+
+# target to generate assembly for a file
+Geometric.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PoolBallVision.dir/build.make CMakeFiles/PoolBallVision.dir/Geometric.cpp.s
+.PHONY : Geometric.cpp.s
+
+Histograms.o: Histograms.cpp.o
+.PHONY : Histograms.o
+
+# target to build an object file
+Histograms.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PoolBallVision.dir/build.make CMakeFiles/PoolBallVision.dir/Histograms.cpp.o
+.PHONY : Histograms.cpp.o
+
+Histograms.i: Histograms.cpp.i
+.PHONY : Histograms.i
+
+# target to preprocess a source file
+Histograms.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PoolBallVision.dir/build.make CMakeFiles/PoolBallVision.dir/Histograms.cpp.i
+.PHONY : Histograms.cpp.i
+
+Histograms.s: Histograms.cpp.s
+.PHONY : Histograms.s
+
+# target to generate assembly for a file
+Histograms.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PoolBallVision.dir/build.make CMakeFiles/PoolBallVision.dir/Histograms.cpp.s
+.PHONY : Histograms.cpp.s
+
+Region.o: Region.cpp.o
+.PHONY : Region.o
+
+# target to build an object file
+Region.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PoolBallVision.dir/build.make CMakeFiles/PoolBallVision.dir/Region.cpp.o
+.PHONY : Region.cpp.o
+
+Region.i: Region.cpp.i
+.PHONY : Region.i
+
+# target to preprocess a source file
+Region.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PoolBallVision.dir/build.make CMakeFiles/PoolBallVision.dir/Region.cpp.i
+.PHONY : Region.cpp.i
+
+Region.s: Region.cpp.s
+.PHONY : Region.s
+
+# target to generate assembly for a file
+Region.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PoolBallVision.dir/build.make CMakeFiles/PoolBallVision.dir/Region.cpp.s
+.PHONY : Region.cpp.s
+
+Utilities.o: Utilities.cpp.o
+.PHONY : Utilities.o
+
+# target to build an object file
+Utilities.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PoolBallVision.dir/build.make CMakeFiles/PoolBallVision.dir/Utilities.cpp.o
+.PHONY : Utilities.cpp.o
+
+Utilities.i: Utilities.cpp.i
+.PHONY : Utilities.i
+
+# target to preprocess a source file
+Utilities.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PoolBallVision.dir/build.make CMakeFiles/PoolBallVision.dir/Utilities.cpp.i
+.PHONY : Utilities.cpp.i
+
+Utilities.s: Utilities.cpp.s
+.PHONY : Utilities.s
+
+# target to generate assembly for a file
+Utilities.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PoolBallVision.dir/build.make CMakeFiles/PoolBallVision.dir/Utilities.cpp.s
+.PHONY : Utilities.cpp.s
+
 dev_main.o: dev_main.cpp.o
 .PHONY : dev_main.o
 
@@ -186,6 +282,18 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... PoolBallVision"
+	@echo "... Geometric.o"
+	@echo "... Geometric.i"
+	@echo "... Geometric.s"
+	@echo "... Histograms.o"
+	@echo "... Histograms.i"
+	@echo "... Histograms.s"
+	@echo "... Region.o"
+	@echo "... Region.i"
+	@echo "... Region.s"
+	@echo "... Utilities.o"
+	@echo "... Utilities.i"
+	@echo "... Utilities.s"
 	@echo "... dev_main.o"
 	@echo "... dev_main.i"
 	@echo "... dev_main.s"

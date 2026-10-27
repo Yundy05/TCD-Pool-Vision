@@ -85,12 +85,12 @@ clean: CMakeFiles/PoolBallVision.dir/clean
 CMakeFiles/PoolBallVision.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/PoolBallVision.dir/build.make CMakeFiles/PoolBallVision.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/PoolBallVision.dir/build.make CMakeFiles/PoolBallVision.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="/Users/andyyu/Desktop/Trinity/4th Year/Computer Vision/TCD-Pool-Vision/build/CMakeFiles" --progress-num=1,2,3 "Built target PoolBallVision"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="/Users/andyyu/Desktop/Trinity/4th Year/Computer Vision/TCD-Pool-Vision/build/CMakeFiles" --progress-num=1,2,3,4,5,6,7 "Built target PoolBallVision"
 .PHONY : CMakeFiles/PoolBallVision.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/PoolBallVision.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/andyyu/Desktop/Trinity/4th Year/Computer Vision/TCD-Pool-Vision/build/CMakeFiles" 3
+	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/andyyu/Desktop/Trinity/4th Year/Computer Vision/TCD-Pool-Vision/build/CMakeFiles" 7
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/PoolBallVision.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/andyyu/Desktop/Trinity/4th Year/Computer Vision/TCD-Pool-Vision/build/CMakeFiles" 0
 .PHONY : CMakeFiles/PoolBallVision.dir/rule
@@ -102,7 +102,7 @@ PoolBallVision: CMakeFiles/PoolBallVision.dir/rule
 # codegen rule for target.
 CMakeFiles/PoolBallVision.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/PoolBallVision.dir/build.make CMakeFiles/PoolBallVision.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="/Users/andyyu/Desktop/Trinity/4th Year/Computer Vision/TCD-Pool-Vision/build/CMakeFiles" --progress-num=1,2,3 "Finished codegen for target PoolBallVision"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="/Users/andyyu/Desktop/Trinity/4th Year/Computer Vision/TCD-Pool-Vision/build/CMakeFiles" --progress-num=1,2,3,4,5,6,7 "Finished codegen for target PoolBallVision"
 .PHONY : CMakeFiles/PoolBallVision.dir/codegen
 
 # clean rule for target.

@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -isystem /opt/homebrew/Cellar/opencv@4/4.14.0_11/include/opencv4
+CXX_INCLUDES = -isystem /Users/andyyu/Libraries/opencv-4.12.0-install/include/opencv4
 
 CXX_FLAGSarm64 = -g -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic
 
