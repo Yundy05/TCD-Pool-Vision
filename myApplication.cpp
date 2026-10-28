@@ -212,7 +212,7 @@ std::vector<DetectedBall> DetectBalls(
     return detections;
 }
 
-// Ellipse Detection for Hough
+// Contour-based ellipse-fitting diagnostic
 cv::Mat DrawEllipseCandidates(
     const cv::Mat &rectified_image,
     const cv::Mat &edge_image)
@@ -300,6 +300,38 @@ cv::Mat DrawEllipseCandidates(
     return display;
 }
 
+// Foreground Mask
+cv::Mat BuildForegroundMask(
+    const cv::Mat &rectified_image,
+    cv::Mat &cloth_mask)
+{
+    cv::Mat hsv;
+
+    cv::cvtColor(
+        rectified_image,
+        hsv,
+        cv::COLOR_BGR2HSV);
+
+    // Provisional diagnostic range for green cloth.
+    // These are not validated final parameters.
+    const cv::Scalar cloth_lower(35, 25, 25);
+    const cv::Scalar cloth_upper(95, 255, 255);
+
+    cv::inRange(
+        hsv,
+        cloth_lower,
+        cloth_upper,
+        cloth_mask);
+
+    cv::Mat foreground_mask;
+
+    cv::bitwise_not(
+        cloth_mask,
+        foreground_mask);
+
+    return foreground_mask;
+}
+
 void MyApplication()
 {
     const char *file_location = "data/images/";
@@ -350,11 +382,13 @@ void MyApplication()
 
     std::filesystem::create_directories("output/debug");
     std::filesystem::create_directories("output/ground_truth");
+    std::filesystem::create_directories("output/ellipse");
+    std::filesystem::create_directories("output/mask");
 
-    std::cout
-        << "Working directory: "
-        << std::filesystem::current_path()
-        << '\n';
+    // std::cout
+    //     << "Working directory: "
+    //     << std::filesystem::current_path()
+    //     << '\n';
 
     for (int file_no = 0; file_no < number_of_images; ++file_no)
     {
@@ -385,215 +419,250 @@ void MyApplication()
             "Original Image",
             pool_image[file_no]);
 
-        const bool is_training_image =
-            image_filename == "AllBalls.jpeg";
+        cv::Mat rectified_image;
 
-        if (!is_training_image)
+        cv::warpPerspective(
+            pool_image[file_no],
+            rectified_image,
+            perspective_matrix,
+            cv::Size(table_width, table_height),
+            cv::INTER_LINEAR);
+
+        const std::string image_name =
+            std::filesystem::path(image_filename)
+                .stem()
+                .string();
+
+        const std::string output_path =
+            "output/debug/" +
+            image_name +
+            "_rectified.png";
+
+        const std::vector<GroundTruthBall> ground_truth =
+            LoadGroundTruth(
+                "data/ground_truth/ground_truth.csv",
+                image_filename);
+
+        if (ground_truth.empty())
         {
-            cv::Mat rectified_image;
+            throw std::runtime_error(
+                "No ground-truth annotations loaded for: " +
+                image_filename);
+        }
 
-            cv::warpPerspective(
-                pool_image[file_no],
+        const cv::Mat ground_truth_display =
+            DrawGroundTruth(
                 rectified_image,
-                perspective_matrix,
-                cv::Size(table_width, table_height),
-                cv::INTER_LINEAR);
+                ground_truth,
+                image_filename);
 
-            const std::string image_name =
-                std::filesystem::path(image_filename)
-                    .stem()
-                    .string();
+        cv::Mat smoothed_gray;
 
-            const std::string output_path =
-                "output/debug/" +
-                image_name +
-                "_rectified.png";
+        const std::vector<DetectedBall> detected_balls =
+            DetectBalls(rectified_image, smoothed_gray);
 
-            const std::vector<GroundTruthBall> ground_truth =
-                LoadGroundTruth(
-                    "data/ground_truth/ground_truth.csv",
-                    image_filename);
+        cv::Mat detection_display = rectified_image.clone();
 
-            if (ground_truth.empty())
-            {
-                throw std::runtime_error(
-                    "No ground-truth annotations loaded for: " +
-                    image_filename);
-            }
-
-            const cv::Mat ground_truth_display =
-                DrawGroundTruth(
-                    rectified_image,
-                    ground_truth,
-                    image_filename);
-
-            cv::Mat smoothed_gray;
-
-            const std::vector<DetectedBall> detected_balls =
-                DetectBalls(rectified_image, smoothed_gray);
-
-            cv::Mat detection_display = rectified_image.clone();
-
-            for (std::size_t i = 0; i < detected_balls.size(); ++i)
-            {
-                const DetectedBall &ball = detected_balls[i];
-
-                const cv::Point centre(
-                    cvRound(ball.centre.x),
-                    cvRound(ball.centre.y));
-
-                circle(
-                    detection_display,
-                    centre,
-                    cvRound(ball.radius),
-                    cv::Scalar(0, 255, 0),
-                    2);
-
-                drawMarker(
-                    detection_display,
-                    centre,
-                    cv::Scalar(255, 0, 255),
-                    cv::MARKER_CROSS,
-                    8,
-                    1);
-
-                // Candidate index only: not a predicted ball identity.
-                putText(
-                    detection_display,
-                    "D" + std::to_string(i + 1),
-                    centre + cv::Point(8, -8),
-                    cv::FONT_HERSHEY_SIMPLEX,
-                    0.45,
-                    cv::Scalar(0, 255, 0),
-                    1);
-
-                std::cout
-                    << image_filename
-                    << ", D" << (i + 1)
-                    << ": x=" << ball.centre.x
-                    << ", y=" << ball.centre.y
-                    << ", radius=" << ball.radius
-                    << '\n';
-            }
-
-            cv::Mat diagnostic_edges;
-
-            // Mirrors the threshold pair associated with param1 = 100.
-            // This is a diagnostic image, not an input to HoughCircles.
-            cv::Canny(
-                smoothed_gray,
-                diagnostic_edges,
-                50.0,
-                100.0);
-
-            const cv::Mat ellipse_display =
-                DrawEllipseCandidates(
-                    rectified_image,
-                    diagnostic_edges);
-
-            const std::string ground_truth_output =
-                "output/ground_truth/" + image_name + "_ground_truth.png";
-
-            const std::string gray_path =
-                "output/debug/" + image_name + "_smoothed_gray.png";
-
-            const std::string detection_path =
-                "output/" + image_name + "_detections.png";
-
-            const std::string edges_path =
-                "output/debug/" + image_name + "_edges.png";
-
-            const std::string ellipse_path =
-                "output/debug/" + image_name + "_ellipse_candidates.png";
-
-            if (!cv::imwrite(output_path, rectified_image))
-            {
-                throw std::runtime_error(
-                    "Failed to write the rectified image to: " +
-                    output_path);
-            }
-
-            if (!cv::imwrite(
-                    ground_truth_output,
-                    ground_truth_display))
-            {
-                throw std::runtime_error(
-                    "Could not save image: " +
-                    ground_truth_output);
-            }
-
-            if (!imwrite(gray_path, smoothed_gray))
-            {
-                throw std::runtime_error("Could not save: " + gray_path);
-            }
-
-            if (!imwrite(detection_path, detection_display))
-            {
-                throw std::runtime_error(
-                    "Could not save: " + detection_path);
-            }
-
-            if (!cv::imwrite(edges_path, diagnostic_edges))
-            {
-                throw std::runtime_error(
-                    "Could not save: " + edges_path);
-            }
-
-            if (!cv::imwrite(ellipse_path, ellipse_display))
-            {
-                throw std::runtime_error(
-                    "Could not save: " + ellipse_path);
-            }
-
-            std::cout << pool_files[file_no]
-                      << ": " << detected_balls.size()
-                      << " candidate balls detected.\n";
-
-            cv::namedWindow(
-                "Rectified Table",
-                cv::WINDOW_NORMAL);
-
-            cv::imshow(
-                "Rectified Table",
-                rectified_image);
-
-            cv::namedWindow(
-                "Ground Truth",
-                cv::WINDOW_NORMAL);
-
-            cv::imshow(
-                "Ground Truth",
-                ground_truth_display);
-
-            cv::namedWindow(
-                "Detected balls",
-                cv::WINDOW_NORMAL);
-
-            cv::imshow(
-                "Detected balls",
-                detection_display);
-
-            cv::namedWindow(
-                "Ellipse candidates",
-                cv::WINDOW_NORMAL);
-
-            cv::imshow(
-                "Ellipse candidates",
-                ellipse_display);
-
-            // std::cout
-            //     << "Saved: " << output_path << '\n'
-            //     << "Saved: " << ground_truth_output << '\n'
-            //     << "Rectified dimensions: "
-            //     << rectified_image.cols << " columns x "
-            //     << rectified_image.rows << " rows\n";
-        }
-        else
+        for (std::size_t i = 0; i < detected_balls.size(); ++i)
         {
+            const DetectedBall &ball = detected_balls[i];
+
+            const cv::Point centre(
+                cvRound(ball.centre.x),
+                cvRound(ball.centre.y));
+
+            circle(
+                detection_display,
+                centre,
+                cvRound(ball.radius),
+                cv::Scalar(0, 255, 0),
+                2);
+
+            drawMarker(
+                detection_display,
+                centre,
+                cv::Scalar(255, 0, 255),
+                cv::MARKER_CROSS,
+                8,
+                1);
+
+            // Candidate index only: not a predicted ball identity.
+            putText(
+                detection_display,
+                "D" + std::to_string(i + 1),
+                centre + cv::Point(8, -8),
+                cv::FONT_HERSHEY_SIMPLEX,
+                0.45,
+                cv::Scalar(0, 255, 0),
+                1);
+
             std::cout
-                << "Training image: "
-                << "no table transformation applied.\n";
+                << image_filename
+                << ", D" << (i + 1)
+                << ": x=" << ball.centre.x
+                << ", y=" << ball.centre.y
+                << ", radius=" << ball.radius
+                << '\n';
         }
+
+        cv::Mat diagnostic_edges;
+
+        // Mirrors the threshold pair associated with param1 = 100.
+        // This is a diagnostic image, not an input to HoughCircles.
+        cv::Canny(
+            smoothed_gray,
+            diagnostic_edges,
+            50.0,
+            100.0);
+
+        const cv::Mat ellipse_display =
+            DrawEllipseCandidates(
+                rectified_image,
+                diagnostic_edges);
+
+        cv::Mat cloth_mask;
+
+        const cv::Mat foreground_mask =
+            BuildForegroundMask(
+                rectified_image,
+                cloth_mask);
+
+        cv::Mat foreground_preview;
+
+        rectified_image.copyTo(
+            foreground_preview,
+            foreground_mask);
+
+        const std::string ground_truth_output =
+            "output/ground_truth/" + image_name + "_ground_truth.png";
+
+        const std::string gray_path =
+            "output/debug/" + image_name + "_smoothed_gray.png";
+
+        const std::string detection_path =
+            "output/" + image_name + "_detections.png";
+
+        const std::string edges_path =
+            "output/debug/" + image_name + "_edges.png";
+
+        const std::string ellipse_path =
+            "output/ellipse/" + image_name + "_ellipse_candidates.png";
+
+        const std::string cloth_path =
+            "output/mask/" + image_name + "_cloth_mask.png";
+
+        const std::string foreground_path =
+            "output/mask/" + image_name + "_foreground_mask.png";
+
+        const std::string preview_path =
+            "output/mask/" + image_name + "_foreground_preview.png";
+
+        if (!cv::imwrite(output_path, rectified_image))
+        {
+            throw std::runtime_error(
+                "Failed to write the rectified image to: " +
+                output_path);
+        }
+
+        if (!cv::imwrite(
+                ground_truth_output,
+                ground_truth_display))
+        {
+            throw std::runtime_error(
+                "Could not save image: " +
+                ground_truth_output);
+        }
+
+        if (!imwrite(gray_path, smoothed_gray))
+        {
+            throw std::runtime_error("Could not save: " + gray_path);
+        }
+
+        if (!imwrite(detection_path, detection_display))
+        {
+            throw std::runtime_error(
+                "Could not save: " + detection_path);
+        }
+
+        if (!cv::imwrite(edges_path, diagnostic_edges))
+        {
+            throw std::runtime_error(
+                "Could not save: " + edges_path);
+        }
+
+        if (!cv::imwrite(ellipse_path, ellipse_display))
+        {
+            throw std::runtime_error(
+                "Could not save: " + ellipse_path);
+        }
+
+        if (!cv::imwrite(cloth_path, cloth_mask) ||
+            !cv::imwrite(foreground_path, foreground_mask) ||
+            !cv::imwrite(preview_path, foreground_preview))
+        {
+            throw std::runtime_error(
+                "Could not save segmentation diagnostics for: " +
+                image_name);
+        }
+
+        std::cout << pool_files[file_no]
+                  << ": " << detected_balls.size()
+                  << " candidate balls detected.\n";
+
+        // cv::namedWindow(
+        //     "Rectified Table",
+        //     cv::WINDOW_NORMAL);
+
+        // cv::imshow(
+        //     "Rectified Table",
+        //     rectified_image);
+
+        // cv::namedWindow(
+        //     "Ground Truth",
+        //     cv::WINDOW_NORMAL);
+
+        // cv::imshow(
+        //     "Ground Truth",
+        //     ground_truth_display);
+
+        // cv::namedWindow(
+        //     "Detected balls",
+        //     cv::WINDOW_NORMAL);
+
+        // cv::imshow(
+        //     "Detected balls",
+        //     detection_display);
+
+        // cv::namedWindow(
+        //     "Ellipse candidates",
+        //     cv::WINDOW_NORMAL);
+
+        // cv::imshow(
+        //     "Ellipse candidates",
+        //     ellipse_display);
+
+        // cv::namedWindow(
+        //     "Foreground mask",
+        //     cv::WINDOW_NORMAL);
+
+        // cv::imshow(
+        //     "Foreground mask",
+        //     foreground_mask);
+
+        // cv::namedWindow(
+        //     "Foreground preview",
+        //     cv::WINDOW_NORMAL);
+
+        // cv::imshow(
+        //     "Foreground preview",
+        //     foreground_preview);
+
+        // std::cout
+        //     << "Saved: " << output_path << '\n'
+        //     << "Saved: " << ground_truth_output << '\n'
+        //     << "Rectified dimensions: "
+        //     << rectified_image.cols << " columns x "
+        //     << rectified_image.rows << " rows\n";
 
         std::cout
             << "Press a key in an image window "
