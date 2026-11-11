@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/Users/andyyu/Desktop/Trinity/4th Year/Computer Vision/TCD-Pool-Vision/build_submission",
+  "command": "/usr/bin/c++  -isystem /Users/andyyu/Libraries/opencv-4.12.0-install/include/opencv4 -O3 -DNDEBUG -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/PoolBallVision.dir/myApplication.cpp.o -c \"/Users/andyyu/Desktop/Trinity/4th Year/Computer Vision/TCD-Pool-Vision/myApplication.cpp\"",
+  "file": "/Users/andyyu/Desktop/Trinity/4th Year/Computer Vision/TCD-Pool-Vision/myApplication.cpp",
+  "output": "CMakeFiles/PoolBallVision.dir/myApplication.cpp.o"
+}
+]

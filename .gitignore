@@ -1,0 +1,17 @@
+# Generated build products (already tracked files remain tracked).
+/build/
+/cmake-build-*/
+/compile_commands.json
+
+# Local diagnostics, exports and preserved historical output.
+/diagnostics/
+/output/
+/archive/
+/backups/
+
+# macOS metadata and transient editor files.
+.DS_Store
+*.swp
+*.swo
+*~
+8

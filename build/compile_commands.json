@@ -10,29 +10,5 @@
   "command": "/usr/bin/c++  -isystem /Users/andyyu/Libraries/opencv-4.12.0-install/include/opencv4 -g -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/PoolBallVision.dir/myApplication.cpp.o -c \"/Users/andyyu/Desktop/Trinity/4th Year/Computer Vision/TCD-Pool-Vision/myApplication.cpp\"",
   "file": "/Users/andyyu/Desktop/Trinity/4th Year/Computer Vision/TCD-Pool-Vision/myApplication.cpp",
   "output": "CMakeFiles/PoolBallVision.dir/myApplication.cpp.o"
-},
-{
-  "directory": "/Users/andyyu/Desktop/Trinity/4th Year/Computer Vision/TCD-Pool-Vision/build",
-  "command": "/usr/bin/c++  -isystem /Users/andyyu/Libraries/opencv-4.12.0-install/include/opencv4 -g -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/PoolBallVision.dir/Utilities.cpp.o -c \"/Users/andyyu/Desktop/Trinity/4th Year/Computer Vision/TCD-Pool-Vision/Utilities.cpp\"",
-  "file": "/Users/andyyu/Desktop/Trinity/4th Year/Computer Vision/TCD-Pool-Vision/Utilities.cpp",
-  "output": "CMakeFiles/PoolBallVision.dir/Utilities.cpp.o"
-},
-{
-  "directory": "/Users/andyyu/Desktop/Trinity/4th Year/Computer Vision/TCD-Pool-Vision/build",
-  "command": "/usr/bin/c++  -isystem /Users/andyyu/Libraries/opencv-4.12.0-install/include/opencv4 -g -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/PoolBallVision.dir/Geometric.cpp.o -c \"/Users/andyyu/Desktop/Trinity/4th Year/Computer Vision/TCD-Pool-Vision/Geometric.cpp\"",
-  "file": "/Users/andyyu/Desktop/Trinity/4th Year/Computer Vision/TCD-Pool-Vision/Geometric.cpp",
-  "output": "CMakeFiles/PoolBallVision.dir/Geometric.cpp.o"
-},
-{
-  "directory": "/Users/andyyu/Desktop/Trinity/4th Year/Computer Vision/TCD-Pool-Vision/build",
-  "command": "/usr/bin/c++  -isystem /Users/andyyu/Libraries/opencv-4.12.0-install/include/opencv4 -g -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/PoolBallVision.dir/Histograms.cpp.o -c \"/Users/andyyu/Desktop/Trinity/4th Year/Computer Vision/TCD-Pool-Vision/Histograms.cpp\"",
-  "file": "/Users/andyyu/Desktop/Trinity/4th Year/Computer Vision/TCD-Pool-Vision/Histograms.cpp",
-  "output": "CMakeFiles/PoolBallVision.dir/Histograms.cpp.o"
-},
-{
-  "directory": "/Users/andyyu/Desktop/Trinity/4th Year/Computer Vision/TCD-Pool-Vision/build",
-  "command": "/usr/bin/c++  -isystem /Users/andyyu/Libraries/opencv-4.12.0-install/include/opencv4 -g -std=c++17 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/PoolBallVision.dir/Region.cpp.o -c \"/Users/andyyu/Desktop/Trinity/4th Year/Computer Vision/TCD-Pool-Vision/Region.cpp\"",
-  "file": "/Users/andyyu/Desktop/Trinity/4th Year/Computer Vision/TCD-Pool-Vision/Region.cpp",
-  "output": "CMakeFiles/PoolBallVision.dir/Region.cpp.o"
 }
 ]
